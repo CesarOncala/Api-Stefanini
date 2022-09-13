@@ -1,6 +1,8 @@
-﻿namespace Example.Application.PessoaService.Service
+﻿using Example.Application.Common;
+
+namespace Example.Application.PessoaService.Service
 {
-    public class DeletePessoaResponse
+    public class DeletePessoaResponse : BaseResponse
     {
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Example.Application.Common;
+using Example.Domain.CidadeAggregate;
 using Example.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,29 +20,61 @@ namespace Example.Application.CidadeService.Service
             _db = db;
         }
 
-        public Task<CreateCidadeResponse> CreateAsync(CreateCidadeRequest request)
+        public async Task<CreateCidadeResponse> CreateAsync(CreateCidadeRequest request)
         {
-            throw new NotImplementedException();
+            if(request is null) throw new ArgumentException("Request Empty!");
+
+            var cidade = Cidade.Create(request.Nome, request.UF);
+
+            await this._db.Cidade.AddAsync(cidade);
+
+            await this._db.SaveChangesAsync();
+
+            return new CreateCidadeResponse { Id = cidade.Id, Nome = cidade.Nome };
         }
 
-        public Task<DeleteCidadeResponse> DeleteAsync(int id)
+        public async Task<DeleteCidadeResponse> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var cidade = await this._db.Cidade.FindAsync(id);
+
+            if (cidade is not null)
+            {
+                this._db.Cidade.Remove(cidade);
+                await this._db.SaveChangesAsync();
+            }
+
+            return new DeleteCidadeResponse { };
         }
 
-        public Task<GetAllCidadeResponse> GetAllAsync()
+        public async Task<GetAllCidadeResponse> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var cidades = await this._db.Cidade.ToListAsync();
+
+            return new GetAllCidadeResponse { Cidades = cidades };
         }
 
-        public Task<GetByIdCidadeResponse> GetByIdAsync(int id)
+        public async Task<GetByIdCidadeResponse> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var q = this._db.Cidade.Include(o => o.Pessoas);
+
+            var cidade = await q.FirstOrDefaultAsync(o=> o.Id == id);
+
+
+            return new GetByIdCidadeResponse { Cidade = cidade };
+
         }
 
-        public Task<UpdateCidadeResponse> UpdateAsync(int id, UpdateCidadeRequest request)
+        public async Task<UpdateCidadeResponse> UpdateAsync(int id, UpdateCidadeRequest request)
         {
-            throw new NotImplementedException();
+            if(request is null ) throw new ArgumentException("Request Empty!");
+
+            var cidade =  await this._db.Cidade.FindAsync(id);
+
+            cidade.Update(request.Nome, request.UF);
+
+            await this._db.SaveChangesAsync();
+
+            return new UpdateCidadeResponse { };
         }
     }
 }

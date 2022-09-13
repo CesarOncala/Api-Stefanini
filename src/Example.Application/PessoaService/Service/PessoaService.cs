@@ -1,5 +1,7 @@
 ﻿using Example.Application.Common;
+using Example.Domain.PessoaAggregate;
 using Example.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,29 +22,61 @@ namespace Example.Application.PessoaService.Service
         }
 
 
-        public Task<CreatePessoaResponse> CreateAsync(CreatePessoaRequest request)
+        public async Task<CreatePessoaResponse> CreateAsync(CreatePessoaRequest request)
         {
-            throw new NotImplementedException();
+            if (request is null) throw new ArgumentNullException("Request Empty");
+
+            var pessoa = Pessoa.Create(request.Nome, request.CPF, request.Idade, request.Id_Cidade);
+
+            await this._db.AddAsync(pessoa);
+            await this._db.SaveChangesAsync();
+
+            return new CreatePessoaResponse() { Nome = pessoa.Nome, Id = pessoa.Id };
         }
 
-        public Task<DeletePessoaResponse> DeleteAsync(int id)
+        public async Task<DeletePessoaResponse> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await this._db.Pessoa.FindAsync(id);
+
+            if (entity is not null)
+            {
+                this._db.Pessoa.Remove(entity);
+                await this._db.SaveChangesAsync();
+            }
+
+            return new DeletePessoaResponse() { };
         }
 
-        public Task<GetAllPessoaResponse> GetAllAsync()
+        public async Task<GetAllPessoaResponse> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var listaPessoas = await this._db.Pessoa.ToListAsync();
+
+            return new GetAllPessoaResponse { Pessoas = listaPessoas };
         }
 
-        public Task<GetByIdPessoaResponse> GetByIdAsync(int id)
+        public async Task<GetByIdPessoaResponse> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var q = this._db.Pessoa.Include(o => o.Cidade);
+
+            var entity = await q.FirstOrDefaultAsync(o=> o.Id == id);
+
+            return entity is not null ? new GetByIdPessoaResponse { Pessoa = entity } : null!;
+
         }
 
-        public Task<UpdatePessoaResponse> UpdateAsync(int id, UpdatePessoaRequest request)
+        public async Task<UpdatePessoaResponse> UpdateAsync(int id, UpdatePessoaRequest request)
         {
-            throw new NotImplementedException();
+            var pessoa = await this._db.Pessoa.FindAsync(id);
+
+            if (pessoa is not null)
+            {
+                pessoa.Update(request.Nome, request.CPF, request.Idade, request.Id_Cidade);
+
+                return new UpdatePessoaResponse { Pessoa = pessoa };
+
+            }
+
+            return new UpdatePessoaResponse();
         }
     }
 }

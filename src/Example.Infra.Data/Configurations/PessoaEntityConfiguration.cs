@@ -27,9 +27,10 @@ namespace Example.Infra.Data.Configurations
             orderConfiguration.Property(o => o.CPF)
                 .IsRequired();
 
-            orderConfiguration.HasOne<Cidade>()
+            orderConfiguration.HasOne(o=> o.Cidade)
                .WithMany(o => o.Pessoas)
-               .HasForeignKey(o => o.Id_Cidade);
+               .HasForeignKey(o => o.Id_Cidade)
+               .IsRequired();
 
         }
     }

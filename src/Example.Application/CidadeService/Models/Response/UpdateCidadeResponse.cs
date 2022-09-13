@@ -1,6 +1,8 @@
-﻿namespace Example.Application.CidadeService.Service
+﻿using Example.Application.Common;
+
+namespace Example.Application.CidadeService.Service
 {
-    public class UpdateCidadeResponse
+    public class UpdateCidadeResponse : BaseResponse
     {
     }
 }

@@ -29,9 +29,9 @@ namespace Example.Infra.Data
             modelBuilder.ApplyConfiguration(new PessoaEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new CidadeEntityTypeConfiguration());
 
-            //modelBuilder.Entity<Domain.ExampleAggregate.Example>();
-            //modelBuilder.Entity<Pessoa>();
-            //modelBuilder.Entity<Cidade>();
+            modelBuilder.Entity<Domain.ExampleAggregate.Example>();
+            modelBuilder.Entity<Pessoa>();
+            modelBuilder.Entity<Cidade>();
 
         }
     }
