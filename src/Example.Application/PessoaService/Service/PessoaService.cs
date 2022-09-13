@@ -71,7 +71,7 @@ namespace Example.Application.PessoaService.Service
             if (pessoa is not null)
             {
                 pessoa.Update(request.Nome, request.CPF, request.Idade, request.Id_Cidade);
-
+                await this._db.SaveChangesAsync();
                 return new UpdatePessoaResponse { Pessoa = pessoa };
 
             }
