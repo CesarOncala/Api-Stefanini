@@ -21,19 +21,7 @@ namespace Example.Domain.PessoaAggregate
 
         public static Pessoa Create(string Nome, string CPF, int Idade, int IdCidade)
         {
-            if (string.IsNullOrWhiteSpace(Nome))
-                throw new ArgumentNullException(nameof(Nome));
-            
-            if (string.IsNullOrWhiteSpace(CPF))
-                throw new ArgumentNullException(nameof(CPF));
-
-            if (!Utils.IsCpf(CPF))
-                throw new InvalidCPFException();
-
-            if (Idade == 0)
-                throw new ArgumentException(nameof(Idade));
-            if (IdCidade == 0)
-                throw new ArgumentException(nameof(IdCidade));
+            Validate(Nome, CPF, Idade, IdCidade);
 
             return new Pessoa
             {
@@ -46,19 +34,33 @@ namespace Example.Domain.PessoaAggregate
 
         public void Update(string Nome, string CPF, int Idade, int IdCidade)
         {
-            SetFields(Nome, CPF, Idade, IdCidade);
-        }
-
-        void SetFields(string Nome, string CPF, int Idade, int IdCidade)
-        {
-            this.CPF = Utils.IsCpf(CPF) ? CPF : throw new InvalidCPFException();
+            Validate(Nome, CPF, Idade, IdCidade);
+         
+            this.CPF = CPF;
             this.Nome = Nome;
             this.Idade = Idade;
             this.Id_Cidade = IdCidade;
         }
 
+     
 
 
+        static void Validate(string Nome, string CPF, int Idade, int IdCidade)
+        {
+            if (string.IsNullOrWhiteSpace(Nome))
+                throw new ArgumentNullException(nameof(Nome));
+
+            if (string.IsNullOrWhiteSpace(CPF))
+                throw new ArgumentNullException(nameof(CPF));
+
+            if (!Utils.IsCpf(CPF))
+                throw new InvalidCPFException();
+
+            if (Idade == 0)
+                throw new InvalidIdadeException();
+            if (IdCidade == 0)
+                throw new ArgumentException(nameof(IdCidade));
+        }
 
 
     }
